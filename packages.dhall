@@ -123,6 +123,26 @@ let upstream =
 
 let overrides = {=}
 
-let additions = {=}
+let additions =
+      { 
+        pqueue = {
+            dependencies = [ "ordered-collections"
+              , "lists"
+              , "newtype"
+              ]
+            , repo = "https://github.com/nullobject/purescript-pqueue.git"
+            , version = "v2.0.0"
+        }
+        ,digraph =
+          { dependencies =
+              [ "ordered-collections"
+              , "lists"
+              , "newtype"
+              , "pqueue"
+              ]
+          , repo = "https://github.com/nullobject/purescript-digraph.git"
+          , version = "v2.0.0"
+          }
+      }
 
-in  upstream // overrides // additions
+in  upstream ⫽ overrides ⫽ additions

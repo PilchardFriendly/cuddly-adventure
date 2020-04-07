@@ -5,6 +5,7 @@ You can edit this file as you like.
 { name = "my-project"
 , dependencies =
   [ "console"
+  , "digraph"
   , "effect"
   , "psci-support"
   , "spec"
