@@ -1,0 +1,4 @@
+{
+    "purescript.buildCommand": "spago build --purs-args --json-errors",
+    "purescript.autoStartPscIde": false
+}
