@@ -69,8 +69,8 @@ renderMap locations = renderMap' (renderLocation locations) locations
 
 renderMap' ::  (Location -> String) -> Set Location -> String
 renderMap' f locations = joinWith "\n" do
-    y <- Array.range 0 9
-    pure $ renderLine' f y (Array.range 0 9)
+    y <- Array.range 0 topY
+    pure $ renderLine' f y (Array.range 0 topX)
 
 spec :: Spec Unit
 spec = describe "Shokinin 20" 
