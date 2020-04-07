@@ -7,6 +7,8 @@ You can edit this file as you like.
   [ "console"
   , "digraph"
   , "effect"
+  , "foldable-traversable"
+  , "parsing"
   , "psci-support"
   , "spec"
   , "spec-discovery"
