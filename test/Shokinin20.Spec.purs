@@ -142,14 +142,14 @@ spec =
             in
               do
                 it "should display results" do
-                  (snd $ writeTeletype subject) `shouldEqual` [ "Number of samples for each p: 100", "0.0 0.5" ]
+                  (snd $ writeTeletype subject) `shouldEqual` [ "Number of samples for each p: 100", "0.0 0.500" ]
           describe "mock triple experiment"
             let
               subject = harness (mkSeed 0) (wrap <$> [ 0.0, 0.1, 0.8 ]) 50 (\bias samples -> pure $ bias)
             in
               do
                 it "should display results" do
-                  (snd $ writeTeletype subject) `shouldEqual` [ "Number of samples for each p: 50", "0.0 0.0", "0.1 0.1", "0.8 0.8" ]
+                  (snd $ writeTeletype subject) `shouldEqual` [ "Number of samples for each p: 50", "0.0 0.000", "0.1 0.100", "0.8 0.800" ]
         describe "pathfinding"
           let
             emptyOffice = office emptyMap 5

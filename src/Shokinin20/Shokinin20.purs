@@ -36,6 +36,7 @@ import Shokinin20.Rendering (locationParser, mapParser, parseMap, renderLine', r
 import Shokinin20.Types (Location, Office(..), Probability(..), probInvert)
 import Teletype (Teletype, log)
 import Test.QuickCheck.Gen (Gen, evalGen)
+import Text.Format (format, precision)
 
 office :: Set Location -> Int -> Office
 office spaces startingColumn =
@@ -136,7 +137,8 @@ harness seed biases n f = do
   traverse_  (go >>> log) biases
   where
   go :: Probability -> String
-  go bias = joinWith " " $ show <<< unwrap <$> sequence [ identity, goGen ] bias
+  go bias = joinWith " " $ sequence [ show <<< unwrap <<< identity 
+                                    , format (precision 3) <<< unwrap <<< goGen ] bias
   -- Reminder, sequence (in this case) is like juxt in clojure
     -- e.g. [f1 f2] v ---> [f1 v, f2 v]
     -- in list of function `[i -> o]` , 

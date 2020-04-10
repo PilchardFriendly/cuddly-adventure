@@ -8,6 +8,7 @@ You can edit this file as you like.
   , "digraph"
   , "effect"
   , "foldable-traversable"
+  , "format"
   , "parsing"
   , "psci-support"
   , "spec"

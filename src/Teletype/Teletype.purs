@@ -14,6 +14,7 @@ data TeletypeF a =
     Log String a
 derive instance functorConsoleF :: Functor TeletypeF
 type Teletype = Free TeletypeF
+
 log :: String -> Teletype Unit
 log s = liftF (Log s unit)
 
