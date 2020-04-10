@@ -108,8 +108,9 @@ officeGraph spaces = buildAllEdges $ buildAllVertices $ Graph.empty
 -- genMaybeP :: forall m a. MonadGen m => Probability -> a -> m (Maybe a)
 -- genMaybeP p a = genMaybe' (unwrap p) (pure a)
 genObstacles :: forall m. MonadGen m => Probability -> List Location -> m (Set Location)
-genObstacles prob xs = Set.fromFoldable <<< List.catMaybes <$> traverse sample xs
+genObstacles prob xs =  flatten <$> traverse sample xs
   where
+  flatten = Set.fromFoldable <<< List.catMaybes
   sample :: Location -> m (Maybe Location)
   sample a = genMaybe' (unwrap prob) (pure a)
 
@@ -125,11 +126,17 @@ officeGen bias = do
 {-- The main event.  The probability is the _chance of an obstacle_ --}
 experiment :: forall m. MonadRec m => MonadGen m => Probability -> Int -> m Probability
 experiment bias trialCount = do
-  trials :: List Office <- resize (const trialCount) $ unfoldable $ officeGen bias
+  trials :: List Office <- resize (const trialCount) 
+    $ unfoldable 
+    $ officeGen bias
   pure $ (calculate trials)
   where
   calculate :: List Office -> Probability
-  calculate = wrap <<< (flip div $ toNumber trialCount) <<< toNumber <<< length <<< (List.filter officeHasPath)
+  calculate = wrap 
+    <<< (flip div $ toNumber trialCount) 
+    <<< toNumber 
+    <<< length 
+    <<< (List.filter officeHasPath)
 
 harness :: forall f. Foldable f => Seed -> f Probability -> Int -> (Probability -> Int -> Gen Probability) -> Teletype Unit
 harness seed biases n f = do
