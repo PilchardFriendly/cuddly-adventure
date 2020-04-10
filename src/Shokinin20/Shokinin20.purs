@@ -17,7 +17,7 @@ import Control.Monad.Gen (class MonadGen, chooseInt, resize, unfoldable)
 import Control.Monad.Gen.Common (genMaybe')
 import Control.Monad.Rec.Class (class MonadRec)
 import Data.Array (any, foldr)
-import Data.Foldable (class Foldable, for_, length)
+import Data.Foldable (class Foldable, length, traverse_)
 import Data.Graph (Graph)
 import Data.Graph as Graph
 import Data.Int (toNumber)
@@ -30,7 +30,7 @@ import Data.Set (fromFoldable, insert, member, toUnfoldable) as Set
 import Data.String (joinWith)
 import Data.Traversable (sequence, traverse)
 import Data.Tuple (Tuple(..), snd, uncurry)
-import Random.LCG (Seed, mkSeed)
+import Random.LCG (Seed)
 import Shokinin20.Internal (allLocations, topX, topY)
 import Shokinin20.Rendering (locationParser, mapParser, parseMap, renderLine', renderLocation, renderMap, renderMap')
 import Shokinin20.Types (Location, Office(..), Probability(..), probInvert)
@@ -133,10 +133,19 @@ experiment bias trialCount = do
 harness :: forall f. Foldable f => Seed -> f Probability -> Int -> (Probability -> Int -> Gen Probability) -> Teletype Unit
 harness seed biases n f = do
   log $ "Number of samples for each p: " <> (show n)
-  for_ biases (go >>> log)
+  traverse_  (go >>> log) biases
   where
   go :: Probability -> String
   go bias = joinWith " " $ show <<< unwrap <$> sequence [ identity, goGen ] bias
+  -- Reminder, sequence (in this case) is like juxt in clojure
+    -- e.g. [f1 f2] v ---> [f1 v, f2 v]
+    -- in list of function `[i -> o]` , 
+    --      t ~ List, 
+    --      m ~ i->
+    --      a ~ o
+
+    -- If you look at the Applicative instance for Function, it might make sense.  This is very common in haskellish languages
+    -- and also in clojure.  Hence, also look at clojure/juxt
 
   goGen :: Probability -> Probability
   goGen bias = evalGen (f bias n) {newSeed: seed, size: 1}

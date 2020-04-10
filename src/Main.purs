@@ -1,7 +1,6 @@
 module Main where
 
 import Prelude
-
 import Data.Int (toNumber)
 import Data.Newtype (wrap)
 import Data.Unfoldable (range) as Unfoldable
@@ -11,14 +10,15 @@ import Shokinin20 (Probability, experiment, harness)
 import Teletype (Teletype, runTeletype)
 
 program :: Seed -> Teletype Unit
-program seed = harness seed biases 100 (\bias samples -> experiment bias samples)
+program seed = harness seed biases samples experiment
   where 
     biases :: Array Probability
-    biases = mkBias <$> (Unfoldable.range 0 10)
+    biases = mkBias <$> (Unfoldable.range 10 0)
     mkBias :: Int -> Probability
     mkBias = toNumber >>> (flip div 10.0) >>> wrap 
+    samples :: Int
+    samples = 1000
 
+{--- maybe you're just joining tonights show. --}
 main :: Effect Unit
-main = do
-  seed <- randomSeed
-  runTeletype $ program seed
+main = randomSeed >>= program >>> runTeletype
