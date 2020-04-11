@@ -11,7 +11,7 @@ benchmark() {
 	go install
 	go build
 	go build-optimized
-	hyperfine './go run' 'go run-optimized'
+	hyperfine --min-runs 4 './go run' './go run-optimized'
 }
 
 

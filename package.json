@@ -4,16 +4,16 @@
         "build": "spago build",
         "clean": "rm -rf node_modules output .spago dist/* *.lock",
         "bundle": "spago bundle-app --main Main --to dist/app.js",
-        "build-optimized": "rollup -c",
-        "run-optimized": "node dist/rollup.js",
+        "build-optimized": "npx rollup -c",
+        "run-optimized": "node dist/rollup.min.js",
         "profile": "npx 0x -o dist/app.js",
-        "profile-optimized": "npx 0x -o dist/rollup.js"
+        "profile-optimized": "npx 0x -o dist/rollup.min.js"
     },
     "devDependencies": {
         "0x": "^4.9.1",
         "purescript": "^0.13.6",
-        "rollup": "^0.41.6",
-        "rollup-plugin-purs": "^1.0.38",
+        "rollup": "^2.6.0",
+        "rollup-plugin-purs": "Pauan/rollup-plugin-purs#master",
         "rollup-plugin-terser": "^5.3.0",
         "spago": "^0.14.0"
     },

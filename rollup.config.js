@@ -2,12 +2,14 @@ import purs from "rollup-plugin-purs";
 import { terser } from "rollup-plugin-terser";
 
 export default {
-  entry: "src/Main.purs",
-  dest: "dist/rollup.js",
-  format: "iife",
-  sourceMap: true,
+  input: "src/Main.purs",
+  output: {
+    file: "dist/rollup.min.js"
+    ,format: "iife"
+    ,sourcemap: true
+  },
   plugins: [
-    purs(),
-    terser()
+    purs({runMain:true})
+    ,terser()
   ]
 };
