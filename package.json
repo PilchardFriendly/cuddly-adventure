@@ -3,13 +3,18 @@
         "postinstall": "spago install",
         "build": "spago build",
         "clean": "rm -rf node_modules output .spago dist/* *.lock",
-        "bundle": "spago bundle-app --main Main --to dist/app.js && parcel build assets/index.html"
+        "bundle": "spago bundle-app --main Main --to dist/app.js",
+        "build-optimized": "rollup -c",
+        "run-optimized": "node dist/rollup.js",
+        "profile": "npx 0x -o dist/app.js",
+        "profile-optimized": "npx 0x -o dist/rollup.js"
     },
     "devDependencies": {
-        "parcel-bundler": "^1.12.3",
+        "0x": "^4.9.1",
         "purescript": "^0.13.6",
         "rollup": "^0.41.6",
         "rollup-plugin-purs": "^1.0.38",
+        "rollup-plugin-terser": "^5.3.0",
         "spago": "^0.14.0"
     },
     "dependencies": {}
