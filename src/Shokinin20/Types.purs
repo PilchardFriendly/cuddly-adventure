@@ -10,6 +10,10 @@ import Data.Tuple (Tuple)
   
 type Location = Tuple Int Int
 
+class HasOfficePath algo where
+  extractHasPath :: algo Boolean -> Boolean
+  calculateHasPath :: Office -> algo Boolean
+
 
 data Office = Office {
     officeStartingColumn :: Int

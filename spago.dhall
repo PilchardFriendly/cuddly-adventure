@@ -15,6 +15,8 @@ You can edit this file as you like.
   , "spec-discovery"
   , "spec-quickcheck"
   , "stringutils"
+  , "logic"
+  , "machines"
   ]
 , packages = ./packages.dhall
 , sources = [ "src/**/*.purs", "test/**/*.purs" ]

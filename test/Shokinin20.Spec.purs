@@ -1,6 +1,7 @@
 module Shokinin20.Spec (spec) where
 
 import Prelude
+
 import Control.Monad.Gen (class MonadGen, choose, chooseInt, elements, resize, unfoldable)
 import Control.Monad.Rec.Class (class MonadRec)
 import Data.Either (Either(..))
@@ -8,29 +9,22 @@ import Data.Foldable (foldr)
 import Data.Graph as Graph
 import Data.List (List)
 import Data.List (fromFoldable) as List
+import Data.Maybe (Maybe(..))
 import Data.Newtype (class Newtype, unwrap, wrap)
 import Data.NonEmpty (NonEmpty, (:|))
 import Data.Set (delete, empty, fromFoldable) as Set
 import Data.String.Utils (stripMargin)
 import Data.Tuple (Tuple(..), snd)
+import Data.Tuple.Nested ((/\))
+import Shokinin20 (Location, Office(..), experiment, genStartingColumn, harness, office, officeGraph, officeHasPath, parseMap, possibleNeighbours, renderMap)
+import Shokinin20.Frontier (Frontier, ViaFrontier)
 import Shokinin20.Internal (allLocations, topX, topY)
-import Shokinin20
-  ( Office(..)
-  , Location
-  , experiment
-  , genStartingColumn
-  , harness
-  , office
-  , officeGraph
-  , officeHasPath
-  , parseMap
-  , possibleNeighbours
-  , renderMap
-  )
+import Shokinin20.LogicT (ViaBacktracking)
+import Shokinin20.Types (class HasOfficePath, calculateHasPath, extractHasPath)
 import Teletype (writeTeletype)
 import Test.QuickCheck (class Arbitrary, mkSeed, (<?>))
 import Test.QuickCheck.Gen (evalGen)
-import Test.Spec (Spec, describe, it)
+import Test.Spec (Spec, describe, it, pending')
 import Test.Spec.Assertions (shouldEqual, shouldSatisfy)
 import Test.Spec.QuickCheck (quickCheck)
 
@@ -102,6 +96,18 @@ knownBadPatterns =
                                         |.........."""
     :| []
 
+
+
+newtype ViaGraph a = ViaGraph a
+derive instance newtypeViaGraph :: Newtype (ViaGraph a) _
+
+instance hasOfficePathViaGraph :: HasOfficePath ViaGraph where
+  extractHasPath = unwrap
+  calculateHasPath = ViaGraph <<< officeHasPath
+
+
+
+
 spec :: Spec Unit
 spec =
   describe "Shokinin 20"
@@ -155,6 +161,12 @@ spec =
             emptyOffice = office emptyMap 5
 
             fullOffice = office fullMap 1
+            solution1 :: Office -> ViaGraph Boolean
+            solution1 = calculateHasPath
+            solution2 :: Office -> ViaBacktracking Boolean
+            solution2 = calculateHasPath
+            solution3 :: Office -> ViaFrontier Boolean
+            solution3 = calculateHasPath
           in
             do
               it "empty map" do
@@ -164,8 +176,21 @@ spec =
               describe "properties" do
                 it "solvable maps always have solutions" do
                   quickCheck \(Solvable o@(Office { officeSpaces })) -> officeHasPath o <?> ("Failed for:\n" <> renderMap officeSpaces)
+
+                pending' "solvable maps are solved by both graph and backtracking" do
+                  quickCheck \(Solvable o@(Office { officeSpaces })) -> (extractHasPath $ solution1 o)  == (extractHasPath $ solution2 o) <?>
+                     ("Mismatch between `graph` and `backtrack for:`" <> renderMap officeSpaces)
+                it "solvable maps are solved by both graph and frontier" do
+                  quickCheck \(Solvable o@(Office { officeSpaces })) -> (extractHasPath $ solution1 o)  == (extractHasPath $ solution3 o) <?>
+                     ("Mismatch between `graph` and `frontier for:`" <> renderMap officeSpaces)
+
+
                 it "unsolvable maps never have solutions" do
                   quickCheck \(Unsolvable o@(Office { officeSpaces })) -> (not $ officeHasPath o) <?> ("Failed for:\n" <> renderMap officeSpaces)
+                it "unsolvable maps are solved by both graph and frontier" do
+                  quickCheck \(Unsolvable o@(Office { officeSpaces })) -> (extractHasPath $ solution1 o)  == (extractHasPath $ solution3 o) <?>
+                     ("Mismatch between `graph` and `frontier for:`" <> renderMap officeSpaces)
+
               describe "officeGraph" do
                 describe "2 pt space (A<->B)"
                   let
@@ -200,4 +225,22 @@ spec =
                     do
                       it "should have 4 possibleNeighbours" do
                         possibleNeighbours pt `shouldEqual` List.fromFoldable [ Tuple 2 10, Tuple 0 10, Tuple 1 11, Tuple 1 9 ]
-
+              describe "Frontier" let 
+                  f0 :: Frontier
+                  f0 = mempty
+                  f1 :: Frontier 
+                  f1 = wrap $ Nothing /\ 1
+                  f2 :: Frontier
+                  f2 = wrap $ Just (1/\2) /\ 4
+                  f3 :: Frontier
+                  f3 = wrap $ Just (0/\0) /\ 5
+                in do
+                describe "monoid" do
+                  it "law1 i" do
+                    ( append f0 mempty ) `shouldEqual` mempty
+                  it "law1 ii" do
+                    (append f0 f1) `shouldEqual` f1
+                  it "low depth wins over high depth" do
+                    (append f1 f2) `shouldEqual` f1
+                  it "low depth wins commutative" do
+                    (append f2 f1) `shouldEqual` f1

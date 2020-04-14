@@ -125,7 +125,12 @@ let overrides = {=}
 
 let additions =
       { 
-        pqueue = {
+        logic = {
+            dependencies = [] : List Text
+            ,repo = "https://github.com/mlang/purescript-logic.git"
+            ,version = "master"
+        }
+        ,pqueue = {
             dependencies = [ "ordered-collections"
               , "lists"
               , "newtype"
