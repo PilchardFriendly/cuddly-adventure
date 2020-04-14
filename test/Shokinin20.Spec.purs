@@ -16,12 +16,13 @@ import Data.Set (delete, empty, fromFoldable) as Set
 import Data.String.Utils (stripMargin)
 import Data.Tuple (Tuple(..), snd)
 import Data.Tuple.Nested ((/\))
-import Shokinin20 (Location, Office(..), experiment, genStartingColumn, harness, office, officeGraph, officeHasPath, parseMap, possibleNeighbours, renderMap)
+import Shokinin20 (Location, Office(..), Probability, experiment, genStartingColumn, harness, office, officeGraph, officeHasPath, parseMap, renderMap)
 import Shokinin20.Frontier (Frontier, ViaFrontier)
-import Shokinin20.Internal (allLocations, topX, topY)
+import Shokinin20.Internal (allLocations, possibleNeighbours, topX, topY)
 import Shokinin20.LogicT (ViaBacktracking)
-import Shokinin20.Types (class HasOfficePath, calculateHasPath, extractHasPath)
-import Teletype (writeTeletype)
+import Shokinin20.Types (calculateHasPath, extractHasPath)
+import Shokinin20.ViaGraph (ViaGraph)
+import Teletype (Teletype, writeTeletype)
 import Test.QuickCheck (class Arbitrary, mkSeed, (<?>))
 import Test.QuickCheck.Gen (evalGen)
 import Test.Spec (Spec, describe, it, pending')
@@ -98,14 +99,6 @@ knownBadPatterns =
 
 
 
-newtype ViaGraph a = ViaGraph a
-derive instance newtypeViaGraph :: Newtype (ViaGraph a) _
-
-instance hasOfficePathViaGraph :: HasOfficePath ViaGraph where
-  extractHasPath = unwrap
-  calculateHasPath = ViaGraph <<< officeHasPath
-
-
 
 
 spec :: Spec Unit
@@ -117,26 +110,35 @@ spec =
       emptyMap = Set.fromFoldable allLocations
 
       fullMap = Set.empty
+      solution1 :: Office -> ViaGraph Boolean
+      solution1 = calculateHasPath
+      solver1 = extractHasPath <<< solution1
+      solution2 :: Office -> ViaBacktracking Boolean
+      solution2 = calculateHasPath
+      solution3 :: Office -> ViaFrontier Boolean
+      solution3 = calculateHasPath
+
     in
       do
         describe "experiment" do
           describe "solvable"
             let
-              experimentalRun = experiment (wrap 0.0) 100
+              experimentalRun :: forall m. MonadRec m => MonadGen m => m Probability
+              experimentalRun = experiment (wrap 0.0) 100 solver1
             in
               do
                 it "should report solvable maps as 100% likely to succeed" do
                   evalGen experimentalRun seed `shouldEqual` (wrap 1.0)
           describe "mostly solvable"
             let
-              experimentalRun = experiment (wrap 0.20) 100
+              experimentalRun = experiment (wrap 0.20) 100 solver1
             in
               do
                 it "should report mostly solvable maps as 80% <> 99% likely to succeed" do
-                  evalGen experimentalRun seed `shouldSatisfy` (unwrap >>> \p -> p < 1.0 && p > 0.8)
+                  evalGen experimentalRun seed  `shouldSatisfy` (unwrap >>> \p -> p < 1.0 && p > 0.8)
           describe "unsolvable"
             let
-              experimentalRun = experiment (wrap 1.0) 100
+              experimentalRun = experiment (wrap 1.0) 100 solver1
             in
               do
                 it "should report unsolvable maps as 0% likely to succeed" do
@@ -144,14 +146,16 @@ spec =
         describe "harness" do
           describe "mock experiment"
             let
-              subject = harness (mkSeed 0) [ wrap 0.0 ] 100 (\bias samples -> pure $ wrap 0.5)
+              subject = harness (mkSeed 0) [ wrap 0.0 ] 100 solver1 (\bias samples solver -> pure $ wrap 0.5)
             in
               do
                 it "should display results" do
                   (snd $ writeTeletype subject) `shouldEqual` [ "Number of samples for each p: 100", "0.0 0.500" ]
           describe "mock triple experiment"
             let
-              subject = harness (mkSeed 0) (wrap <$> [ 0.0, 0.1, 0.8 ]) 50 (\bias samples -> pure $ bias)
+              subject :: Teletype Unit
+              subject = harness (mkSeed 0) probabilities 50 solver1 (\bias samples solver -> pure $ bias)
+              probabilities = (wrap <$> [ 0.0, 0.1, 0.8 ])
             in
               do
                 it "should display results" do
@@ -161,12 +165,6 @@ spec =
             emptyOffice = office emptyMap 5
 
             fullOffice = office fullMap 1
-            solution1 :: Office -> ViaGraph Boolean
-            solution1 = calculateHasPath
-            solution2 :: Office -> ViaBacktracking Boolean
-            solution2 = calculateHasPath
-            solution3 :: Office -> ViaFrontier Boolean
-            solution3 = calculateHasPath
           in
             do
               it "empty map" do

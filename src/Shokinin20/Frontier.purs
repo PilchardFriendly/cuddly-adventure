@@ -19,8 +19,8 @@ import Data.Set as Set
 import Data.Tuple (snd)
 import Data.Tuple.Nested ((/\), type (/\))
 import Data.Unfoldable (class Unfoldable)
-import Shokinin20 (Location, Office(..), possibleNeighbours, renderLocation)
-import Shokinin20.Internal (topX, topY)
+import Shokinin20 (Location, Office(..), renderLocation)
+import Shokinin20.Internal (topX, topY, possibleNeighbours)
 import Shokinin20.Types (class HasOfficePath)
 
 type FrontierState = Map Location Frontier

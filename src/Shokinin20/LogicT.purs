@@ -4,8 +4,8 @@ import Prelude
 
 import Control.Monad.Logic.Class (class MonadLogic)
 import Control.MonadZero (guard)
-import Data.Array.NonEmpty (NonEmptyArray, findIndex)
 import Data.Array as Array
+import Data.Array.NonEmpty (NonEmptyArray, findIndex)
 import Data.Array.NonEmpty as NonEmptyArray
 import Data.List as List
 import Data.Maybe (Maybe(..), isNothing, maybe')
@@ -15,8 +15,8 @@ import Data.Set as Set
 import Data.Tuple (Tuple, snd)
 import Data.Tuple.Nested ((/\))
 import Data.Unfoldable (class Unfoldable)
-import Shokinin20 (Location, Office(..), possibleNeighbours)
-import Shokinin20.Internal (topY)
+import Shokinin20 (Location, Office(..))
+import Shokinin20.Internal (possibleNeighbours, topY)
 import Shokinin20.Types (class HasOfficePath)
 
 
