@@ -21,6 +21,46 @@ To run - this will install all the tools except hyperfine
 
 + We reuse the MonadGen from quickcheck (Gen) in prod as well as test code
 + we abstract over console output with Teletype (a free monad)
++ the frontier algorithm uses a tail recursive monad with Loop and Done primitive
++ the graph approach is based on an SCC algorithm
+
+## Benchmarking:
+
+    ./go benchmark
+    ...
+    Benchmark #1: node ./dist/app.js --strategy graph
+    Time (mean ± σ):     22.507 s ±  0.158 s    [User: 22.859 s, System: 0.387 s]
+    Range (min … max):   22.347 s … 22.704 s    4 runs
+    
+    Benchmark #2: node ./dist/app.js --strategy frontier
+    Time (mean ± σ):      6.973 s ±  0.034 s    [User: 7.377 s, System: 0.166 s]
+    Range (min … max):    6.943 s …  7.008 s    4 runs
+    
+    Summary
+    'node ./dist/app.js --strategy frontier' ran
+        3.23 ± 0.03 times faster than 'node ./dist/app.js --strategy graph'
+
+## The frontier algorithm
+
+We model the traversal a crest of increasing path length spreading in all directions from the start point:
+
+    ..........
+    ..........
+    ..........
+    ..........
+    ..........
+    ..........
+    ..........
+    .....3....
+    ....323...
+    ...32123..
+
+We have found a solution if, during each step:
+    1) we add no new steps along the frontier (because we've filled the local area), 
+    2) find a path to the exit
+
+This approach is about 3x quicker than the graph algorithm, unoptimised, as it can exit quickly.
+
 
 ## The graph algorithm
 
@@ -55,3 +95,7 @@ WIP - Using [Backtracking, Interleaving, and Terminating Monad Transformers](htt
 [LogicT](https://github.com/mlang/purescript-logic/blob/master/src/Control/Monad/Logic/Class.purs) has implementations for Array, CatList and a few others.
 
 This means that, instead of considering the graph as a whole, we can fairly search across the office.
+
+Note: LogicT approach consumes the whole stack super quickly.  I couldn't find a continuation implementation. Migrating from haskell was sufficientlly difficult.
+
+Note 2: It's not obvious that we can prune whole search paths, and there isn't a way of keeping memory of previous searches.
