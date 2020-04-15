@@ -9,9 +9,10 @@ npm-script(){
 benchmark() {
 	go clean
 	go install
-	go build
-	go build-optimized
-	hyperfine --min-runs 4 './go run' './go run-optimized'
+	# go build
+	go package
+	# go build-optimized
+	hyperfine --min-runs 4 'node ./dist/app.js --strategy graph' 'node ./dist/app.js --strategy frontier'
 }
 
 
@@ -29,6 +30,10 @@ case $1 in
   run)
 	npx spago run
     ;;
+  run-strategy2)
+	npm-script bundle
+	node ./dist/app.js --strategy frontier
+	;;
   profile)
 	npm-script $1
     ;;
@@ -37,7 +42,7 @@ case $1 in
 	npm-script $1
 	;;
   package)
-	npm-script $1
+	npm-script bundle
 	;;
   build-optimized)
   	npm-script $1

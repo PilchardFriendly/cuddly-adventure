@@ -1,7 +1,6 @@
 module Shokinin20.ViaGraph (officeHasPath, officeGraph, ViaGraph) where
 
 import Prelude
-
 import Data.Graph (Graph)
 import Data.Graph as Graph
 import Data.List (List, any, foldr)
@@ -13,16 +12,14 @@ import Data.Tuple (Tuple(..), snd, uncurry)
 import Shokinin20.Internal (possibleNeighbours, topY)
 import Shokinin20.Types (class HasOfficePath, Location, Office(..))
 
+newtype ViaGraph a
+  = ViaGraph a
 
-newtype ViaGraph a = ViaGraph a
 derive instance newtypeViaGraph :: Newtype (ViaGraph a) _
 
 instance hasOfficePathViaGraph :: HasOfficePath ViaGraph where
   extractHasPath = unwrap
   calculateHasPath = ViaGraph <<< officeHasPath
-
-
-
 
 {-- officeHasPath: True if there is a path from (n,topY)-> (m, 0) where n is the starting position--}
 officeHasPath :: Office -> Boolean
@@ -39,6 +36,7 @@ officeHasPath o@(Office { officeStartingColumn, officeSpaces }) = any containsSt
 
   isStart :: Location -> Boolean
   isStart t = t == Tuple officeStartingColumn topY
+
 type FoldR a b
   = a -> b -> b
 
