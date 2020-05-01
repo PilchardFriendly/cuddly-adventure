@@ -11,19 +11,25 @@ import Effect (Effect)
 import Options.Applicative (Parser) as Options
 import Options.Applicative (execParser, fullDesc, header, help, helper, info, long, metavar, progDesc, strOption, value, (<**>))
 import Random.LCG (Seed, randomSeed)
-import Shokinin20 (Office, Probability, calculateHasPath, experiment, extractHasPath, harness)
+import Shokinin20 (class HasOfficePath, Office, Probability, calculateHasPath, experiment, extractHasPath, harness)
 import Shokinin20.Frontier (ViaFrontier)
 import Shokinin20.ViaGraph (ViaGraph)
 import Teletype (Teletype, runTeletype)
 
-data Strategy = StrategyGraph | StrategyFrontier
+data Strategy = StrategyGraph | StrategyFrontier | StrategyShortMap
 instance readStrategy :: Read Strategy where
   read s = case read s of
     Just "graph" -> Just StrategyGraph
     Just "frontier" -> Just StrategyFrontier
+    Just "shortmap" -> Just StrategyShortMap
     _ -> Nothing
 
 data Program = Program (Maybe Strategy)
+
+data ViaShortMap a = ViaShortMap a
+instance hasOfficePathViaShortMap :: HasOfficePath ViaShortMap where
+  extractHasPath _ = false
+  calculateHasPath _ = ViaShortMap false
 
 programOptions :: Options.Parser Program
 programOptions = Program  <$> (read <$> (strOption (long "strategy" <> metavar "STRATEGY" <> value "frontier" <> help "How to solve the problem")))
@@ -54,10 +60,13 @@ main = do
     strategy (Program s) = case s of 
       Just (StrategyGraph) -> (extractHasPath <<<viaGraph)
       Just (StrategyFrontier) -> (extractHasPath <<< viaFrontier)
+      Just (StrategyShortMap) -> (extractHasPath <<< viaShortMap)
       Nothing -> (extractHasPath <<< viaGraph)
     viaGraph :: Office -> ViaGraph Boolean
     viaGraph = calculateHasPath
     viaFrontier :: Office -> ViaFrontier Boolean
     viaFrontier = calculateHasPath
+    viaShortMap :: Office -> ViaShortMap Boolean
+    viaShortMap = calculateHasPath
 
 

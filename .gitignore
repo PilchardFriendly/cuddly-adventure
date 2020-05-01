@@ -1,3 +1,5 @@
+.DS_Store
+.ghci
 /bower_components/
 /node_modules/
 /.pulp-cache/
@@ -11,3 +13,6 @@
 /*.code-workspace
 /dist/
 /*.0x/
+.stack-work/
+*~
+*.cabal
