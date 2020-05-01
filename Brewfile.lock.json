@@ -1,0 +1,60 @@
+{
+  "entries": {
+    "brew": {
+      "haskell-stack": {
+        "version": "2.1.3",
+        "bottle": {
+          "cellar": ":any_skip_relocation",
+          "prefix": "/usr/local",
+          "files": {
+            "catalina": {
+              "url": "https://homebrew.bintray.com/bottles/haskell-stack-2.1.3.catalina.bottle.1.tar.gz",
+              "sha256": "65f8b095630d1018849e6e845efc33449af957143cddf2a1917908d7d11b4df6"
+            },
+            "mojave": {
+              "url": "https://homebrew.bintray.com/bottles/haskell-stack-2.1.3.mojave.bottle.1.tar.gz",
+              "sha256": "228c583aa3eb036ca6aaa8a9b9fe6ad152790bd537bffdaca295aa9f497174e7"
+            },
+            "high_sierra": {
+              "url": "https://homebrew.bintray.com/bottles/haskell-stack-2.1.3.high_sierra.bottle.1.tar.gz",
+              "sha256": "28d341adbc1acf444fb0f71899f14d81d772d5ba59ae6eebe201ac24fd6e3aa8"
+            }
+          }
+        }
+      },
+      "direnv": {
+        "version": "2.21.2",
+        "bottle": {
+          "cellar": ":any_skip_relocation",
+          "prefix": "/usr/local",
+          "files": {
+            "catalina": {
+              "url": "https://homebrew.bintray.com/bottles/direnv-2.21.2.catalina.bottle.tar.gz",
+              "sha256": "31a7b6b1f16dd3e881ec693cb83e07757500f8d4810a5ebad3ab5986f7a6ef28"
+            },
+            "mojave": {
+              "url": "https://homebrew.bintray.com/bottles/direnv-2.21.2.mojave.bottle.tar.gz",
+              "sha256": "6a79378f41555b964e95c093c4a693fd2252c873bae453ebb309ec148eaeac7b"
+            },
+            "high_sierra": {
+              "url": "https://homebrew.bintray.com/bottles/direnv-2.21.2.high_sierra.bottle.tar.gz",
+              "sha256": "e490c0f7a242c35343e2f4d108b069380a9f73b2c7656d23db1c8940e549920b"
+            }
+          }
+        }
+      }
+    }
+  },
+  "system": {
+    "macos": {
+      "catalina": {
+        "HOMEBREW_VERSION": "2.2.13",
+        "HOMEBREW_PREFIX": "/usr/local",
+        "Homebrew/homebrew-core": "431813dff13cee10ff6e3392ee41b04d55a4668c",
+        "CLT": "11.4.1.0.1.1586360307",
+        "Xcode": "11.4",
+        "macOS": "10.15.4"
+      }
+    }
+  }
+}

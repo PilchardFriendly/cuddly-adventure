@@ -53,6 +53,7 @@ type Builder a
   = a -> a
 
 type OfficeGraph = (Graph, Vertex -> (Location, Location, [Location]), Location -> Maybe Vertex)
+
 {-- Turns a set of points into a di-graph based on cartesian adjacency (not diagonals)--}
 officeGraph :: Set Location -> OfficeGraph
 officeGraph = officeGraph'

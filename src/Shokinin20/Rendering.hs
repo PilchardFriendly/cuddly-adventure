@@ -22,30 +22,30 @@ import qualified Text.Megaparsec.Char as P
 type Parser a = ParsecT String String Identity a
 renderLocation ::  Set Location -> Location -> String
 renderLocation locations location = if (Set.member location locations) then "." else "O"
-    
+
 
 renderLine' :: (Location -> String)  -> Int -> [Int] -> String
 renderLine' f y xs = intercalate "" go
     where
         go = do
             x <- xs
-            pure $ f (x,y)    
+            pure $ f (x,y)
 
 renderMap :: Set Location -> String
 renderMap locations = renderMap' (renderLocation locations) locations
 
 
 renderMap' ::  (Location -> String) -> Set Location -> String
-renderMap' f locations = intercalate "\n" do
+renderMap' f locations = intercalate "\n" $ do
     y <- [0..topY]
-    pure $ renderLine' f y ([0..topX])
+    pure $ renderLine' f y [0..topX]
 
 renderOffice :: Office -> String
 renderOffice o@(Office _ spaces) = renderMap spaces
 
 parseMap :: String -> Either String (Set Location)
-parseMap s = runIdentity $ first (const "Argh") <$> (runParserT p "Map content" s) 
-    where 
+parseMap s = runIdentity $ first (const "Argh") <$> (runParserT p "Map content" s)
+    where
         p :: Parser (Set Location)
         p = (mapParser locationParser)
 
@@ -54,10 +54,10 @@ locationParser = ((const True) <$> P.char '.') <|> ((const False <$> P.char 'O')
 
 mapParser :: forall e s m. (MonadParsec e s m, Token s ~ Char) => m Bool -> m (Set Location)
 mapParser locParser = (ifoldl (flip unpackLine) Set.empty) <$> unlines
-    where 
+    where
         unlines :: m [[Bool]]
         unlines = sepBy1 (many locParser) (P.char '\n')
         unpackLine :: Int -> Set Location -> [Bool] -> Set Location
-        unpackLine y s bs = ifoldl (flip $ unpackLocation y) s bs
+        unpackLine y = ifoldl (flip $ unpackLocation y)
         unpackLocation :: Int -> Int -> Set Location -> Bool -> Set Location
         unpackLocation y x s b  = if b then Set.insert (x,y) $ s else s

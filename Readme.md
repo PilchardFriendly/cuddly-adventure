@@ -17,6 +17,7 @@ To run - this will install all the tools except hyperfine
 + hyperfine - for benchmarking (```brew install hyperfine```)
 + deadcode elimination with rollup with purs-rollup-plugin
 
+
 ## Interesting bits
 
 + We reuse the MonadGen from quickcheck (Gen) in prod as well as test code
@@ -99,3 +100,97 @@ This means that, instead of considering the graph as a whole, we can fairly sear
 Note: LogicT approach consumes the whole stack super quickly.  I couldn't find a continuation implementation. Migrating from haskell was sufficientlly difficult.
 
 Note 2: It's not obvious that we can prune whole search paths, and there isn't a way of keeping memory of previous searches.
+
+
+# Part 2 - Errata
+
+## Tech
++ haskell
++ stack
++ hedgehog/hspec
++ sitting along side the purescript - novel?  yes Useful? meh...
+
+## Interesting bits
+
+It's mostly a like for like, but there are thing that work in Purescript the don't work in Haskell, and vice versa.
+
+### Recursion
+Purescript:
+```purescript  
+    go v1 = tailRecM2 loop v1 (step v1)
+        loop :: ViaFrontier Int 
+                -> ViaFrontier Int
+                -> Identity (Step { 
+                    a :: ViaFrontier Int, 
+                    b :: ViaFrontier Int} 
+                    (ViaFrontier Boolean))
+        loop v1 v2@(ViaFrontier (sol/\_)) = 
+            pure $ case (stop v1 v2) of
+            Just b -> Done (ViaFrontier (sol/\b))
+            Nothing -> Loop { a : v2, b : step v2 }
+```
+
+Haskell:
+
+```haskell
+    go v1 = catMaybes $ zipWith loop (steps v1) (tail $ steps v1)
+    steps :: ViaFrontier Int -> [ViaFrontier Int]
+    steps v1 = v1 : steps (step v1)
+    loop :: ViaFrontier Int 
+            -> ViaFrontier Int
+            -> Maybe (ViaFrontier Boolean)
+    loop v1 v2@(ViaFrontier (sol,_)) = 
+        (ViaFrontier.(sol,)) <$> stop v1 v2
+```
+
+### Lists/Arrays
+
+Purescript really doesn't like you using Lists - most of the built in librarys work  with Arrays.  So there's a lof of List -> Array munging going on.
+
+Since there aren't any patterns, and purescript doesn't optimise, the output is pretty slow.  Especially for folds/filters.  
+
+Haskell's laziness is really nice here, as you can filter/fold - and the fusion wiull kind in, leaving you with just one traversal.
+
+### IDE
+
+I've been using VS code, and the Purescript LSP is ok.  It helps a bit, but it mostly works.
+
+The haskell IDE extension is a bit fiddly, and error prone.  I think it neutral in value at the moment.  However, great minds are working on it, and I fully expect to see 2020 be a breakout year for the Haskell IDE experience.
+
+### Parsers
+
+Actually - Purescript's ```Text.Parsing``` and Haskells ```MegaParsec``` are pretty similar.  Megaparsec is super typeclassy, so full marks there.
+
+### Generators
+
+Haskel and Purescript have MonadGen type classes, mostly you can get the same sort of thing.  The eval parts are different - Hedghog (haskell, evalGen) gives you access to the rosetree, which is unexpected.
+
+### Property based testing
+
+I prefer the haskell/hedgehog choice of avoiding ```Arbitrary```.  Haskell has enough ways to manage namespaces, so coupling to Generators rather than newtypes is fine.
+
+### Performance
+
+Haskell wins by a country mile.  That's because it's nearly ALL statically eliminated.  Plus - the graph solution uses efficient Int indexing.  Totally different experience. 
+
+If we shifted to a concurrency approach, haskell would probably beat Rust.  
+
+### Effects
+
+Purescript is niceer dev experience - the Free monads are slow but seem familiar.
+
+I use polysemy in haskell - and I just don't the surface area very well, so it's mostly copy and paste.
+
+
+### Setup
+
+Haskell is a complete nightmare to setup.  It's getting better.  The IDE was sort of documented.  
+
+No go script yet.  You could try and see how far you get...
+
+```brew bundle``` then
+```direnv allow``` then
+```stack test``` then ...
+
+
+
