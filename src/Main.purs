@@ -12,7 +12,7 @@ import Options.Applicative (Parser) as Options
 import Options.Applicative (execParser, fullDesc, header, help, helper, info, long, metavar, progDesc, strOption, value, (<**>))
 import Random.LCG (Seed, randomSeed)
 import Shokinin20 (class HasOfficePath, Office, Probability, calculateHasPath, experiment, extractHasPath, harness)
-import Shokinin20.Frontier (ViaFrontier)
+import Shokinin20.ViaFrontier (ViaFrontier)
 import Shokinin20.ViaGraph (ViaGraph)
 import Teletype (Teletype, runTeletype)
 

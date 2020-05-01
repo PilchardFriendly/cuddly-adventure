@@ -1,4 +1,4 @@
-module Shokinin20.Frontier where
+module Shokinin20.ViaFrontier where
 
 import Prelude
 
