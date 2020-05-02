@@ -98,6 +98,6 @@ harness seed biases n sol f = do
     -- and also in clojure.  Hence, also look at clojure/juxt
 
   goGen :: Probability -> Probability
-  goGen bias = case evalGen 1 seed (f bias n sol) of
+  goGen bias = case evalGen 1000 seed (f bias n sol) of
     (Just t) -> treeValue t
     Nothing -> error "No generated Value"

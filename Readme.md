@@ -186,11 +186,20 @@ I use polysemy in haskell - and I just don't the surface area very well, so it's
 
 Haskell is a complete nightmare to setup.  It's getting better.  The IDE was sort of documented.  
 
-No go script yet.  You could try and see how far you get...
+No ```go``` script yet.  You could try and see how far you get...
 
-```brew bundle``` then
-```direnv allow``` then
-```stack test``` then ...
+    brew bundle
+
+for some tooling, then
+
+    direnv allow
+
+to setup your paths, then
+
+    stack test 
+
+and wait while your electrified rocks burn your upper quads (it will download and compile ```ghc```).
+    
 
 
 

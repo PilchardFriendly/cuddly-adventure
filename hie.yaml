@@ -1,5 +1,7 @@
 cradle:
   stack:
+    - path: ./app/
+      component: shokinin20:exe:shokinin20-exe
     - path: ./test/
       component: shokinin20:test:shokinin20-test
     - path: ./src/

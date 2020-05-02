@@ -12,7 +12,11 @@ benchmark() {
 	# go build
 	go package
 	# go build-optimized
-	hyperfine --min-runs 4 'node ./dist/app.js --strategy graph' 'node ./dist/app.js --strategy frontier'
+	hyperfine --min-runs 4  \
+		'node ./dist/app.js --strategy graph' \
+		'node ./dist/app.js --strategy frontier' \
+		'stack run -- strategy graph' \
+		'stack run -- strategy frontier' 
 }
 
 

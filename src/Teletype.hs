@@ -33,6 +33,7 @@ runTeletypePure :: Sem (Teletype ': r) a -> Sem r ([String], a)
 runTeletypePure
   = runOutputMonoid pure         --  For each WriteTTY in our program, consume an output by appending it to the list in a ([String], a)
   . runInputList ([]::[String])  -- Treat each element of our list of strings as a line of input
-  . reinterpret2 \case           {- Reinterpret our effect in terms of Input and Output -}
+                                 -- {- Reinterpret our effect in terms of Input and Output -}
+  . reinterpret2 \case           
       WriteTTY msg -> output msg
       ReadTTY -> maybe "" id <$> input
