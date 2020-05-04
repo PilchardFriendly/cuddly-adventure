@@ -10,7 +10,7 @@ import Prelude hiding (log)
 
 import Data.Ratio ((%))
 
-import Hedgehog.Internal.Gen (MonadGen, evalGen, Gen)
+import Hedgehog.Internal.Gen (MonadGen, evalGen, Gen, fromGenT, GenT(..))
 import Hedgehog.Internal.Seed (Seed(..))
 import Hedgehog.Internal.Tree (treeValue)
 import Hedgehog.Range (Size(..))
@@ -22,6 +22,7 @@ import qualified Formatting.Formatters as Format
 import Control.Newtype (unpack, pack)
 import Control.Monad.Identity
 import Polysemy
+import qualified System.Random.SplitMix as SplitMix
 import Text.Printf (printf)
 
 import Data.List (intercalate)
@@ -39,17 +40,38 @@ type Unit = ()
 office :: Set Location -> Int -> Office
 office spaces startingColumn = Office startingColumn (Set.insert (startingColumn,topY) spaces)
 
+
+genRatio :: (MonadGen m)  => m Double
+genRatio = fromGenT . GenT $ \_ (Seed v0 _) -> pure (f (SplitMix.mkSMGen v0))
+    where f seed = fst $ SplitMix.nextDouble seed
+
+genProbabilities :: (MonadGen m) => m [Probability]
+genProbabilities = fromGenT . GenT $ \_ (Seed v0 gamma) -> pure (fix ratios (SplitMix.mkSMGen v0))
+  where
+    ratios :: (SplitMix.SMGen -> [Probability]) -> SplitMix.SMGen -> [Probability]
+    ratios recur seed = let next = SplitMix.nextDouble seed
+                        in (pack $ fst next) : (recur $ snd next)
+
+genBool' :: MonadGen m => Probability -> m Bool
+genBool' (Probability p) = do
+  sample <- genRatio
+  pure $ if (sample < p) then True else False
+
 genMaybe' :: MonadGen m => Probability -> m a -> m (Maybe a)
 genMaybe' (Probability p) ma = do
-  sample <- Gen.double  (Range.linearFrac 0 1)
+  sample <- genRatio
   if (sample < p) then (Just <$> ma) else pure Nothing
 
+
 genObstacles :: forall m. MonadGen m => Probability -> [Location] -> m (Set Location)
-genObstacles prob xs =  flatten <$> traverse sample xs
+genObstacles (Probability p) xs =  flatten <$> do
+  samples <- genProbabilities
+  pure $ zipWith sample samples xs
   where
-  flatten = Set.fromList . catMaybes
-  sample :: Location -> m (Maybe Location)
-  sample a = genMaybe' prob (pure a)
+    flatten :: [Maybe Location] -> Set Location
+    flatten = Set.fromList . catMaybes
+    sample :: Probability -> Location -> Maybe Location
+    sample (Probability b) a = if b < p then Just a else Nothing
 
 genStartingColumn :: forall m. MonadGen m => m Int
 genStartingColumn = Gen.int (Range.linear 0 topX)

@@ -23,6 +23,8 @@ instance HasOfficePath ViaGraph where
 
 {-- officeHasPath: True if there is a path from (n,topY)-> (m, 0) where n is the starting position--}
 officeHasPath :: Office -> Bool
+{-# SCC officeHasPath #-}
+
 {-- Using connectedComponents is brute force - since it will find all possible paths, effectively.
     It gets cheaper the more full of obstacles the office becomes
     but it's a useful library to get started with--}

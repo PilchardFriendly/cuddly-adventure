@@ -60,6 +60,7 @@ frontierOffice o@(Office officeStartingColumn officeSpaces) = head go
             else Nothing
         checkExit st = any (flip Map.member st) exitRow
         stalled st1 st2 = st1==st2
+{-# SCC frontierOffice #-}
 
 frontierOne :: Location -> ViaFrontier Int
 frontierOne origin = pack $ (newMap, 1)
