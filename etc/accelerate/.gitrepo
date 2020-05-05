@@ -1,0 +1,12 @@
+; DO NOT EDIT (unless you know what you are doing)
+;
+; This subdirectory is a git "subrepo", and this file is maintained by the
+; git-subrepo command. See https://github.com/git-commands/git-subrepo#readme
+;
+[subrepo]
+	remote = git@github.com:AccelerateHS/accelerate.git
+	branch = master
+	commit = 7e5ca843575ec15e1e2f00683d3d29cd7907b9f9
+	parent = a175ddef54e678471b3d1a445fbd8c2fc5b712df
+	method = merge
+	cmdver = 0.4.1
