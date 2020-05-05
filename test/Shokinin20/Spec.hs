@@ -26,6 +26,7 @@ import qualified Data.Set as Set
 import Polysemy
 import Teletype (Teletype, runTeletypePure)
 import Text.Megaparsec ((<?>))
+
 -- import HaskellWorks.Hspec.Hedgehog (require, requireProperty)
 
 import Shokinin20.Shokinin20 (harness, experiment, office, genStartingColumn)
@@ -252,4 +253,4 @@ spec =
                   it "a < b => a+b=a" do
                     (f1 <> f2) `shouldBe` f1
                   it "a > b => b+a=a" do
-                    (f2 <> f1) `shouldBe` f1
+                    (f2 <> f1) `shouldBe` f1               

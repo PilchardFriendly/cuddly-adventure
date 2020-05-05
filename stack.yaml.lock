@@ -11,6 +11,20 @@ packages:
       sha256: 1da6604fc3e0ce9af8742a631da413a845bbfc49aeff3a304ff9cebc1518b689
   original:
     hackage: hspec-hedgehog-0.0.1.2@sha256:aaeeb50a43d2bce8a1850baa3ddf934a964bfe38c64efd59306b0c1421e55b45,1405
+- completed:
+    hackage: accelerate-1.2.0.1@sha256:bb1928efe602545df4043692916ed427c959110cbd678d03c3f9c3be25d1ae88,20112
+    pantry-tree:
+      size: 10790
+      sha256: 8a4fbbb91a5a4ff77ebcc8f65ab5288874127f5f2e86304fad1b4c5d8186af5e
+  original:
+    hackage: accelerate-1.2.0.1@sha256:bb1928efe602545df4043692916ed427c959110cbd678d03c3f9c3be25d1ae88,20112
+- completed:
+    hackage: mwc-random-accelerate-0.1.0.0@sha256:2c1a16f145e57d743981f9ee61b55e6fff9717e6fd878769e92e45caeae8fda8,1359
+    pantry-tree:
+      size: 248
+      sha256: 05020dd9b338e2038da0d8a51b061c56f25eb6a3421e01d282021b7405da3f9a
+  original:
+    hackage: mwc-random-accelerate-0.1.0.0@sha256:2c1a16f145e57d743981f9ee61b55e6fff9717e6fd878769e92e45caeae8fda8,1359
 snapshots:
 - completed:
     size: 491373

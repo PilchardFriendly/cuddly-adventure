@@ -22,6 +22,7 @@ dependencies:
 - ilist
 - splitmix
 - accelerate
+- mwc-random-accelerate
 
 default-extensions:
   - DataKinds
