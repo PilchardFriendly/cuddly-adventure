@@ -21,6 +21,7 @@ dependencies:
 - megaparsec
 - ilist
 - splitmix
+- accelerate
 
 default-extensions:
   - DataKinds
