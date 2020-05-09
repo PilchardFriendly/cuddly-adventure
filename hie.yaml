@@ -6,3 +6,5 @@ cradle:
       component: shokinin20:test:shokinin20-test
     - path: ./src/
       component: shokinin20:lib
+    - path: ./etc/accelerate/src
+      component: accelerate:lib

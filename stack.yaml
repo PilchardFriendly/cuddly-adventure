@@ -37,7 +37,6 @@ packages:
 #
 extra-deps:
   - hspec-hedgehog-0.0.1.2@sha256:aaeeb50a43d2bce8a1850baa3ddf934a964bfe38c64efd59306b0c1421e55b45,1405
-  - accelerate-1.2.0.1@sha256:bb1928efe602545df4043692916ed427c959110cbd678d03c3f9c3be25d1ae88,20112
   - mwc-random-accelerate-0.1.0.0@sha256:2c1a16f145e57d743981f9ee61b55e6fff9717e6fd878769e92e45caeae8fda8,1359
 
 # Override default flag values for local packages and extra-deps

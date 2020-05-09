@@ -55,7 +55,7 @@ genProbabilities = fromGenT . GenT $ \_ (Seed v0 gamma) -> pure (fix ratios (Spl
 genBool' :: MonadGen m => Probability -> m Bool
 genBool' (Probability p) = do
   sample <- genRatio
-  pure $ if (sample < p) then True else False
+  pure $ sample < p
 
 genMaybe' :: MonadGen m => Probability -> m a -> m (Maybe a)
 genMaybe' (Probability p) ma = do
