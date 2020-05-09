@@ -31,6 +31,7 @@ resolver: lts-15.3
 packages:
 - . 
 - etc/accelerate
+- etc/
 # Dependency packages to be pulled from upstream that are not in the resolver.
 # These entries can reference officially published versions as well as
 # forks / in-progress versions pinned to a git hash. For example:
@@ -38,7 +39,8 @@ packages:
 extra-deps:
   - hspec-hedgehog-0.0.1.2@sha256:aaeeb50a43d2bce8a1850baa3ddf934a964bfe38c64efd59306b0c1421e55b45,1405
   - mwc-random-accelerate-0.1.0.0@sha256:2c1a16f145e57d743981f9ee61b55e6fff9717e6fd878769e92e45caeae8fda8,1359
-
+  - llvm-hs-9.0.1.0
+  - llvm-hs-pure-9.0.0.0#
 # Override default flag values for local packages and extra-deps
 # flags: {}
 

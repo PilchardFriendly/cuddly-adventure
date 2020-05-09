@@ -24,6 +24,7 @@ dependencies:
 - accelerate
 - mwc-random-accelerate
 
+
 default-extensions:
   - DataKinds
   - FlexibleContexts
