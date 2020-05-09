@@ -1,0 +1,12 @@
+; DO NOT EDIT (unless you know what you are doing)
+;
+; This subdirectory is a git "subrepo", and this file is maintained by the
+; git-subrepo command. See https://github.com/git-commands/git-subrepo#readme
+;
+[subrepo]
+	remote = git@github.com:AccelerateHS/accelerate-llvm.git
+	branch = master
+	commit = 59e0f978391b252089c00979c770b72070188444
+	parent = 3f7dc29fa12e277c913c43dc4bae9cf613b419ee
+	method = merge
+	cmdver = 0.4.1
