@@ -62,6 +62,10 @@ extra-source-files:
 -- Build configuration
 -- -------------------
 
+Flag nofib
+  Default:              False
+  Description:          Build the nofib test suite (required for backend testing)
+
 Library
   exposed-modules:
     Data.Array.Accelerate.LLVM.Native
@@ -182,7 +186,9 @@ test-suite nofib-llvm-native
   type:                 exitcode-stdio-1.0
   hs-source-dirs:       test/nofib
   main-is:              Main.hs
-
+  if !flag(nofib)
+    buildable: False
+    
   build-depends:
           base                          >= 4.10
         , accelerate

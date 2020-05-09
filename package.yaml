@@ -22,6 +22,8 @@ dependencies:
 - ilist
 - splitmix
 - accelerate
+- accelerate-llvm
+- accelerate-llvm-native
 - mwc-random-accelerate
 
 
