@@ -1,7 +1,4 @@
-{-# LANGUAGE 
-    DerivingStrategies,
-    DerivingVia,
-    DeriveGeneric #-} 
+{-# LANGUAGE DerivingVia, DeriveGeneric #-}
 {-# LANGUAGE MultiParamTypeClasses, RankNTypes, ScopedTypeVariables #-}
 {-# LANGUAGE TemplateHaskell #-}
 {-# LANGUAGE LambdaCase, BlockArguments #-}
@@ -14,6 +11,7 @@ import Prelude
 import Polysemy
 import Polysemy.Input
 import Polysemy.Output
+import qualified Data.Maybe
 
 data Teletype m a where
   ReadTTY  :: Teletype m String
@@ -22,7 +20,7 @@ data Teletype m a where
 makeSem ''Teletype
 
 log :: Member Teletype r => String -> Sem r ()
-log s = writeTTY s
+log = writeTTY
 
 teletypeToIO :: Member (Embed IO) r => Sem (Teletype ': r) a -> Sem r a
 teletypeToIO = interpret $ \case
@@ -31,9 +29,9 @@ teletypeToIO = interpret $ \case
 
 runTeletypePure :: Sem (Teletype ': r) a -> Sem r ([String], a)
 runTeletypePure
-  = runOutputMonoid pure         --  For each WriteTTY in our program, consume an output by appending it to the list in a ([String], a)
-  . runInputList ([]::[String])  -- Treat each element of our list of strings as a line of input
-                                 -- {- Reinterpret our effect in terms of Input and Output -}
-  . reinterpret2 \case           
+  = runOutputMonoid pure          --  For each WriteTTY in our program, consume an output by appending it to the list in a ([String], a)
+  . runInputList ([]::[String])   -- Treat each element of our list of strings as a line of input
+                                  -- {- Reinterpret our effect in terms of Input and Output -}
+  . reinterpret2 \case
       WriteTTY msg -> output msg
-      ReadTTY -> maybe "" id <$> input
+      ReadTTY -> Data.Maybe.fromMaybe "" <$> input

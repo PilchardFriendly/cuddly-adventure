@@ -28,13 +28,13 @@ officeHasPath :: Office -> Bool
 {-- Using connectedComponents is brute force - since it will find all possible paths, effectively.
     It gets cheaper the more full of obstacles the office becomes
     but it's a useful library to get started with--}
-officeHasPath o@(Office officeStartingColumn  officeSpaces) = 
+officeHasPath o@(Office officeStartingColumn  officeSpaces) =
     any containsStartAndEnd $ subGraphs mkGraph
   where
     mkGraph :: OfficeGraph
     mkGraph = officeGraph' officeSpaces
     subGraphs :: OfficeGraph -> [[Location]]
-    subGraphs (g,lookup,_) =  (fmap $ toLocation.lookup) <$> sccVerticea g
+    subGraphs (g,lookup,_) =  fmap (toLocation.lookup) <$> sccVerticea g
     toLocation :: (Location,Location,[Location]) -> Location
     toLocation (l,_,_) = l
     sccVerticea :: Graph -> [[Vertex]]

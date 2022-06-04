@@ -25,7 +25,7 @@ type FrontierState = Map Location Frontier
 newtype Frontier = Frontier (Maybe Location,Int)
   deriving (Generic, Eq, Show)
 
-instance Newtype Frontier ((Maybe Location),Int)
+instance Newtype Frontier (Maybe Location,Int)
 {-- we always take the lowest score, since that was the one that got there first--}
 instance Semigroup Frontier where
   (Frontier a@(l1,n1)) <> (Frontier b@(l2,n2)) = Frontier $ if n2 > n1 then a else b
@@ -46,34 +46,34 @@ frontierOffice o@(Office officeStartingColumn officeSpaces) = head go
         steps :: ViaFrontier Int -> [ViaFrontier Int]
         steps v1 = v1 : steps (step v1)
         loop :: ViaFrontier Int -> ViaFrontier Int-> Maybe (ViaFrontier Boolean)
-        loop v1 v2@(ViaFrontier (sol,depth)) = (ViaFrontier.(sol,)) <$> stop v1 v2
+        loop v1 v2@(ViaFrontier (sol,depth)) = ViaFrontier.(sol,) <$> stop v1 v2
 
         start :: ViaFrontier Int
         start = frontierOne (officeStartingColumn, topY)
         step  :: ViaFrontier Int -> ViaFrontier Int
-        step  = frontierSucc (flip Set.member officeSpaces)
+        step  = frontierSucc (`Set.member` officeSpaces)
         exitRow = (,0) <$> [0..topX]
         stop :: ViaFrontier Int -> ViaFrontier Int -> Maybe Boolean
-        stop (ViaFrontier (state1,_)) (ViaFrontier (state2,_)) =
-            if checkExit state2 then Just True
-            else if stalled state1 state2 then Just False
-            else Nothing
-        checkExit st = any (flip Map.member st) exitRow
+        stop (ViaFrontier (state1,_)) (ViaFrontier (state2,_))
+          | checkExit state2 = Just True
+          | stalled state1 state2 = Just False
+          | otherwise = Nothing
+        checkExit st = any (`Map.member` st) exitRow
         stalled st1 st2 = st1==st2
 {-# SCC frontierOffice #-}
 
 frontierOne :: Location -> ViaFrontier Int
-frontierOne origin = pack $ (newMap, 1)
+frontierOne origin = pack (newMap, 1)
   where
     newMap :: FrontierState
-    newMap = Map.insert origin (Frontier ((Just origin), 1)) Map.empty
+    newMap = Map.insert origin (Frontier (Just origin, 1)) Map.empty
 
 frontierSucc :: (Location -> Bool) -> ViaFrontier Int -> ViaFrontier Int
 frontierSucc pred (ViaFrontier (state,depth)) = ViaFrontier (state', d')
   where
     state' = state <> frontier'
 
-    frontier' :: FrontierState 
+    frontier' :: FrontierState
     frontier' = Map.fromList $ do
       {-- we're going to work out where our frontier is, which is all the locations at the current depth.
           Then we're going to step in each direction from each frontier, with an increase in depth

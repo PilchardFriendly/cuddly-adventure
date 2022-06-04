@@ -30,19 +30,19 @@ mkStrategy  "frontier" = Just StrategyFrontier
 mkStrategy "shortmap" = Just StrategyShortMap
 mkStrategy _ = Nothing
 
-data Program = Program (Maybe Strategy)
+newtype Program = Program (Maybe Strategy)
 
-data ViaShortMap a = ViaShortMap a
+newtype ViaShortMap a = ViaShortMap a
 instance HasOfficePath ViaShortMap where
   extractHasPath _ = False
   calculateHasPath _ = ViaShortMap False
 
 programOptions :: Options.Parser Program
-programOptions = Program  <$> (mkStrategy <$> (strOption (
-        long "strategy" 
+programOptions = Program  <$> (mkStrategy <$> strOption (
+        long "strategy"
         <> metavar "STRATEGY"
         <> value "frontier"
-        <> help "How to solve the problem")))
+        <> help "How to solve the problem"))
 
 program :: (Member Teletype r) => (Office -> Bool) -> Seed -> Sem r ()
 program solver seed = harness seed biases samples solver experiment
@@ -63,8 +63,8 @@ main = do
   runM $ teletypeToIO (program (strategy opts) seed)
   where
     options = execParser $ info (programOptions <**> helper) ( fullDesc
-     <> progDesc "Shokinin 20"
-     <> header "Get to the food truck!")
+      <> progDesc "Shokinin 20"
+      <> header "Get to the food truck!")
     strategy :: Program -> (Office -> Bool)
     strategy (Program s) = case s of
       Just StrategyGraph -> extractHasPath . viaGraph

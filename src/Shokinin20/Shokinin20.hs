@@ -50,7 +50,7 @@ genProbabilities = fromGenT . GenT $ \_ (Seed v0 gamma) -> pure (fix ratios (Spl
   where
     ratios :: (SplitMix.SMGen -> [Probability]) -> SplitMix.SMGen -> [Probability]
     ratios recur seed = let next = SplitMix.nextDouble seed
-                        in (pack $ fst next) : (recur $ snd next)
+                        in pack (fst next) : recur (snd next)
 
 genBool' :: MonadGen m => Probability -> m Bool
 genBool' (Probability p) = do

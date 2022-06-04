@@ -50,4 +50,4 @@ instance Newtype Probability Double
 --     bottom = wrap 0.0
 
 probInvert :: Probability -> Probability
-probInvert = over Probability (\p -> 1.0 - p)
+probInvert = over Probability (1.0 -)
