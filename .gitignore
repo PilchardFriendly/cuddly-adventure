@@ -12,7 +12,10 @@
 /.spago
 /*.code-workspace
 /dist/
+/dist-newstyle/
 /*.0x/
 .stack-work/
 *~
 *.cabal
+shokinin20*.svg
+shokinin20*.prof

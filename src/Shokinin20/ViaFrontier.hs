@@ -73,7 +73,7 @@ frontierSucc pred (ViaFrontier (state,depth)) = ViaFrontier (state', d')
   where
     state' = state <> frontier'
 
-    frontier' :: FrontierState
+    frontier' :: FrontierState 
     frontier' = Map.fromList $ do
       {-- we're going to work out where our frontier is, which is all the locations at the current depth.
           Then we're going to step in each direction from each frontier, with an increase in depth

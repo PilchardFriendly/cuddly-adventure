@@ -11,12 +11,17 @@ benchmark() {
 	go install
 	# go build
 	go package
+
+	go 'hs-clean'
+	go 'hs-build-optimized'
 	# go build-optimized
-	hyperfine --min-runs 4  \
+	hyperfine \
+		--min-runs 4 \
+		--warmup 1 \
 		'node ./dist/app.js --strategy graph' \
 		'node ./dist/app.js --strategy frontier' \
-		'stack run -- strategy graph' \
-		'stack run -- strategy frontier' 
+		'stack run -- --strategy graph' \
+		'stack run -- --strategy frontier' 
 }
 
 
@@ -61,6 +66,19 @@ case $1 in
     npx spago test
 	;;
 
+  hs-clean)
+	stack purge
+	stack clean
+	;;
+  hs-build-optimised)
+	stack build --ghc-options -O2
+	;;
+  hs-test)
+	stack test
+	;;
+  hs-test-watch)
+	stack test --file-watch
+	;;
   benchmark)
 	benchmark
 	;;

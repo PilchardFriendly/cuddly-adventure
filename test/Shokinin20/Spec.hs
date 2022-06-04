@@ -47,7 +47,6 @@ instance HasOfficePath ViaBacktracking where
 {-- Creates 9 random spots on the map, not including the back row--}
 noiseGen :: MonadGen m => m [Location]
 noiseGen = Gen.list (Range.linear 0 9) locationGen
-    
 
 locationGen :: MonadGen m => m Location
 locationGen = do

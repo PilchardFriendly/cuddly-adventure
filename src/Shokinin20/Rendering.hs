@@ -21,7 +21,7 @@ import qualified Text.Megaparsec.Char as P
 
 type Parser a = ParsecT String String Identity a
 renderLocation ::  Set Location -> Location -> String
-renderLocation locations location = if (Set.member location locations) then "." else "O"
+renderLocation locations location = if Set.member location locations then "." else "O"
 
 
 renderLine' :: (Location -> String)  -> Int -> [Int] -> String
@@ -51,6 +51,7 @@ parseMap s = runIdentity $ first (const "Argh") <$> (runParserT p "Map content" 
 
 locationParser :: (MonadParsec e s m, Token s ~ Char) => m Bool
 locationParser = ((const True) <$> P.char '.') <|> ((const False <$> P.char 'O'))
+-- locationParser = undefined 
 
 mapParser :: forall e s m. (MonadParsec e s m, Token s ~ Char) => m Bool -> m (Set Location)
 mapParser locParser = (ifoldl (flip unpackLine) Set.empty) <$> unlines
@@ -60,4 +61,4 @@ mapParser locParser = (ifoldl (flip unpackLine) Set.empty) <$> unlines
         unpackLine :: Int -> Set Location -> [Bool] -> Set Location
         unpackLine y = ifoldl (flip $ unpackLocation y)
         unpackLocation :: Int -> Int -> Set Location -> Bool -> Set Location
-        unpackLocation y x s b  = if b then Set.insert (x,y) $ s else s
+        unpackLocation y x s b  = if b then Set.insert (x,y) s else s
