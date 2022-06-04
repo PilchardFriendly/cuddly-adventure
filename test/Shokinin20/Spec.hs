@@ -36,7 +36,7 @@ import Shokinin20.ViaFrontier (ViaFrontier(..), Frontier)
 import Shokinin20.Rendering (renderMap, parseMap, renderOffice)
 
 
-emptyGraph :: Graph 
+emptyGraph :: Graph
 emptyGraph  = Graph.buildG (topX,topY) []
 
 newtype ViaBacktracking a = ViaBacktracking a
@@ -62,8 +62,7 @@ instance Newtype Solvable Office
 solvableGen :: forall m. MonadGen m => m Solvable
 solvableGen = do
   noise <- noiseGen
-  startingColumn <- genStartingColumn
-  pure $ pack $ office (withFewerSpaces noise) startingColumn
+  pack . office (withFewerSpaces noise) <$> genStartingColumn
   where
   withFewerSpaces = foldr Set.delete (Set.fromList allLocations)
 
@@ -75,8 +74,7 @@ instance Newtype Unsolvable Office
 noisyUnsolvableGen :: forall m. MonadGen m => m Unsolvable
 noisyUnsolvableGen = do
   noise <- noiseGen
-  startingColumn <- genStartingColumn
-  pure $ pack $ office (withMoreSpaces noise) startingColumn
+  pack . office (withMoreSpaces noise) <$> genStartingColumn
   where
     withMoreSpaces = Set.fromList
 
@@ -138,20 +136,20 @@ spec =
             in
               do
                 it "should report solvable maps as 100% likely to succeed" $
-                  (evalExperiment experimentGen) `shouldBe` (Just $ pack 1.0)
+                  evalExperiment experimentGen `shouldBe` Just (pack 1.0)
           describe "mostly solvable" $
             let
               experimentGen = experiment (pack 0.2) 100 solver1
             in
               it "should report mostly solvable maps as 80% <> 99% likely to succeed" $
-                  (evalExperiment experimentGen)  `shouldSatisfy` (Prelude.maybe False $ (\p -> p < 1.0 && p > 0.8) . unpack)
-          describe "unsolvable" 
+                  evalExperiment experimentGen  `shouldSatisfy` Prelude.maybe False ((\p -> p < 1.0 && p > 0.8) . unpack)
+          describe "unsolvable"
             let
               experimentGen = experiment (pack 1.0) 100 solver1
             in
               do
                 it "should report unsolvable maps as 0% likely to succeed" $
-                  (evalExperiment experimentGen) `shouldBe` (Just $ pack 0.0)
+                  evalExperiment experimentGen `shouldBe` Just (pack 0.0)
         describe "harness" do
           describe "mock experiment"
             let
@@ -162,7 +160,7 @@ spec =
           describe "mock triple experiment"
             let
               subject :: Member Teletype r => Sem r ()
-              subject = harness (Seed.from 0) probabilities 50 solver1 (\bias samples solver -> pure $ bias)
+              subject = harness (Seed.from 0) probabilities 50 solver1 (\bias samples solver -> pure bias)
               probabilities :: [Probability]
               probabilities = (pack <$> [ 0.0, 0.1, 0.8 ])
             in
@@ -185,7 +183,7 @@ spec =
                 officeHasPath fullOffice `shouldBe` False
               describe "properties" do
                 it "solvable maps always have solutions" $ hedgehog do
-                    o <- unpack <$> (forAllWith  showOffice solvableGen)
+                    o <- unpack <$> forAllWith  showOffice solvableGen
                     assert $ officeHasPath o
 
                 it "solvable maps are solved by both graph and backtracking" do
@@ -193,18 +191,18 @@ spec =
                   -- requireProperty $ do
                     --  Solvable o@(Office officeSpaces _ ) <- forAll solvableGen
                     --  (extractHasPath $ solution1 o)  === (extractHasPath $ solution2 o) 
-                     -- <?> ("Mismatch between `graph` and `backtrack for:`" <> renderMap officeSpaces)
+                    -- <?> ("Mismatch between `graph` and `backtrack for:`" <> renderMap officeSpaces)
                 it "solvable maps are solved by both graph and frontier" $ hedgehog do
-                    o <- unpack <$> (forAllWith showOffice solvableGen)
-                    (extractHasPath $ solution1 o)  === (extractHasPath $ solution3 o) 
+                    o <- unpack <$> forAllWith showOffice solvableGen
+                    extractHasPath (solution1 o)  === extractHasPath (solution3 o)
 
                 it "unsolvable maps never have solutions" $ hedgehog do
-                    o <- unpack <$> (forAllWith showOffice noisyUnsolvableGen)
-                    assert (not $ officeHasPath o) 
+                    o <- unpack <$> forAllWith showOffice noisyUnsolvableGen
+                    assert (not $ officeHasPath o)
 
                 it "unsolvable maps are solved by both graph and frontier" $ hedgehog $ do
-                    o <- unpack <$> (forAllWith showOffice unsolvableGen)
-                    (extractHasPath $ solution1 o)  === (extractHasPath $ solution3 o) 
+                    o <- unpack <$> forAllWith showOffice unsolvableGen
+                    extractHasPath (solution1 o)  === extractHasPath (solution3 o)
 
               describe "officeGraph" do
                 describe "2 pt space (A<->B)"
@@ -213,16 +211,16 @@ spec =
 
                     ptB = (1,0)
 
-                    input = Set.fromList $ [ ptA, ptB ]
+                    input = Set.fromList [ ptA, ptB ]
                     (actual,_,_) = officeGraph input
 
                     (expected,_,_) = Graph.graphFromEdges [ (ptA, ptA, [ptB]), (ptB, ptB, [ptA])]
                   in
                     do
                       it "should have 2 vertices" do
-                        Graph.vertices actual `shouldBe` (Graph.vertices expected)
+                        Graph.vertices actual `shouldBe` Graph.vertices expected
                       it "should have A->B andedges" do
-                        (Graph.edges actual) `shouldBe` [(0, 1), (1 ,0)]
+                        Graph.edges actual `shouldBe` [(0, 1), (1 ,0)]
                       -- it "should have B->A edges" do
                       --   (Graph.isAdjacent ptA ptB actual) `shouldBe` Graph.isAdjacent ptA ptB expected
               describe "possible neighbours" do
@@ -233,15 +231,15 @@ spec =
                     do
                       it "should have 4 possibleNeighbours" do
                         possibleNeighbours pt `shouldBe` [ (2, 10), (0, 10), (1, 11), (1, 9 )]
-              describe "Frontier" let 
+              describe "Frontier" let
                   f0 :: Frontier
                   f0 = mempty
-                  f1 :: Frontier 
-                  f1 = pack $ (Nothing,1)
+                  f1 :: Frontier
+                  f1 = pack (Nothing,1)
                   f2 :: Frontier
-                  f2 = pack $ (Just (1,2),4)
+                  f2 = pack (Just (1,2),4)
                   f3 :: Frontier
-                  f3 = pack $ (Just (0,0),5)
+                  f3 = pack (Just (0,0),5)
                 in do
                 describe "monoid" do
                   it "0+0=0" do
